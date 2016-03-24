@@ -11,8 +11,9 @@ public class Main {
 		if(type == "g"){
 			vns = new VNSGeneral();
 		}
-		else
+		else {
 			vns = new VNSCyclic();
+		}
 		File file = new File(args[1]);
 		vns.parseFile(file);
 		vns.kmax = Integer.parseInt(args[2]);
