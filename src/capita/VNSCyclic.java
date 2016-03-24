@@ -31,8 +31,36 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 
 	@Override
 	public ArrayList<int[]> createInitialSolution() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<int[]> solution = new ArrayList<int[]>();
+		int[] perm = cycle;
+		for(int i = 0; i < timespan; i++){
+			while(perm[i] == 0){
+				permutate(perm);
+			}
+			while(!demandSatisfied(solution,i)){
+				solution.add(perm.clone());
+			}
+		}
+		return solution;
+	}
+
+	private boolean demandSatisfied(ArrayList<int[]> solution, int i) {
+		if(solution.size() < demand[i]){
+			return false;
+		}
+		int nbEmpl = 0;
+		for(int[] row: solution){
+			nbEmpl = nbEmpl + row[i];
+		}
+		return nbEmpl >= demand[i];
+	}
+
+	private void permutate(int[] perm) {
+		int temp = perm[0];
+		for(int i = timespan - 1; i > 0; i--){
+			perm[(i+1) % timespan] = perm[i];
+		}
+		perm[1]=temp;
 	}
 
 	@Override
@@ -44,16 +72,16 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			String line = null;
 			while( (line = reader.readLine()) != null) {
 				String[] split = line.split("-");
-				timespan = Integer.parseInt(split[0]);
+				timespan = trimAndParse(split[0]);
 				cycle = new int[timespan];
-				String[] cycleString = split[1].substring(1).split(",");
+				String[] cycleString = split[1].substring(1,split[1].length()-1).split(",");
 				for(int i = 0; i < timespan; i++){
-					cycle[i] = Integer.parseInt(cycleString[i]);
+					cycle[i] = trimAndParse(cycleString[i]);
 				}
 				demand = new int[timespan];
-				String[] demandString = split[2].substring(1).split(",");
+				String[] demandString = split[2].substring(1,split[2].length()-1).split(",");
 				for(int i = 0; i < timespan; i++){
-					demand[i] = Integer.parseInt(demandString[i]);
+					demand[i] = trimAndParse(demandString[i]);
 				}
 			}
 			reader.close();

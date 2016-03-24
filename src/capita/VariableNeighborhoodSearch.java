@@ -49,4 +49,8 @@ public abstract class VariableNeighborhoodSearch {
 	}
 
 	public abstract void parseFile(File file);
+	
+	public int trimAndParse(String str){
+		return Integer.parseInt(str.trim());
+	}
 }

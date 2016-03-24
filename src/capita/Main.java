@@ -18,7 +18,7 @@ public class Main {
 		vns.parseFile(file);
 		vns.kmax = Integer.parseInt(args[2]);
 
-		ArrayList<int[]> solution = vns.runVNSAlgorithm();
+		ArrayList<int[]> solution = vns.createInitialSolution();//vns.runVNSAlgorithm();
 		vns.printSolution(solution);
 	}
 
