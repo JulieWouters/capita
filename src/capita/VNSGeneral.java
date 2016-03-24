@@ -21,19 +21,42 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 		int demandSurplus = getDemandSurplus(x);
 		int numberOfEmployees = x.size();
 		boolean satisfiesConstraints = checkConstraints(x);
+		if(!satisfiesConstraints || demandShortage > 0) {
+			return 99999999;
+		}
 		
-		return demandShortage * 9999999 + demandSurplus * 10 + numberOfEmployees * 100;
+		return demandSurplus * 10 + numberOfEmployees * 100;
 	}
 
 	private boolean checkConstraints(ArrayList<int[]> x) {
-		
-		
 		for(int i = 0; i < x.size(); i++) {
 			ArrayList<Integer> currentSequence = new ArrayList<Integer>();
-			for(int j = 0; j < x.get(i).length; j++) {
-				
+			int[] workerSchedule = x.get(i);
+			for(int j = 0; j < workerSchedule.length; j++) {
+				if(currentSequence.size() == 0) {
+					currentSequence.add(workerSchedule[j]);
+				} else if (currentSequence.get(0) == 0) {
+					if(currentSequence.size() < offDayMin && workerSchedule[j] == 1 || currentSequence.size() == offDayMax && workerSchedule[j] == 0 ) {
+						return false;
+					} else if (workerSchedule[j] == 0) {
+						currentSequence.add(0);
+					} else {
+						currentSequence = new ArrayList<Integer>();
+						currentSequence.add(1);
+					}
+				} else {
+					if(currentSequence.size() < workDayMin && workerSchedule[j] == 0 || currentSequence.size() == workDayMax && workerSchedule[j] == 1) {
+						return false;
+					} else if(workerSchedule[j] == 1) {
+						currentSequence.add(1);
+					} else {
+						currentSequence = new ArrayList<Integer>();
+						currentSequence.add(0);
+					}
+				}
 			}
 		}
+		return true;
 	}
 
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
@@ -45,7 +68,7 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 		} else {
 			allNeighbours = getAllKSwapNeighbours(x, l);
 		}
-		
+				
 		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
 		int cost = Integer.MAX_VALUE;
 		for(ArrayList<int[]> neighbour : allNeighbours) {
@@ -77,7 +100,7 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 
 	private ArrayList<ArrayList<int[]>> getAllKSwapNeighbours(ArrayList<int[]> x, int l) {
 		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
-		
+
 		for(int rowIndex1 = 0; rowIndex1 < x.size(); rowIndex1++) {
 			for(int rowIndex2 = 0; rowIndex2 < x.size(); rowIndex2++) {
 				for(int columnIndex1 = 0; columnIndex1 < x.get(0).length + 1 - l; columnIndex1++) {
@@ -110,13 +133,26 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	}
 
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
+		ArrayList<int[]> newSolution;
 		if (k < 3) {
-			return getRandomKSwapNeighbour(x, k);
+			newSolution = getRandomKSwapNeighbour(x, k);
 		} else if (k == 3) {
-			return getRandomAddDropNeighbour(x);
+			newSolution = getRandomAddDropNeighbour(x);
 		} else {
-			return getRandomKSwapNeighbour(x, k-1);
+			newSolution = getRandomKSwapNeighbour(x, k-1);
 		}
+		
+		while(!checkConstraints(newSolution)) {
+			if (k < 3) {
+				newSolution = getRandomKSwapNeighbour(x, k);
+			} else if (k == 3) {
+				newSolution = getRandomAddDropNeighbour(x);
+			} else {
+				newSolution = getRandomKSwapNeighbour(x, k-1);
+			}
+		}
+		
+		return newSolution;
 	}
 
 	private ArrayList<int[]> getRandomKSwapNeighbour(ArrayList<int[]> x, int k) {
@@ -216,7 +252,8 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 			int[] newWorkerSchedule = getRandomValidWorkerSchedule(demand.length);
 			initialSolution.add(newWorkerSchedule);
 		}
-		
+		printSolution(initialSolution);
+		System.out.println(checkConstraints(initialSolution));
 		return initialSolution;
 	}
 	
@@ -239,6 +276,9 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	}
 	
 	public int getDemandShortage(ArrayList<int[]> solution) {
+		if(solution.size() == 0) {
+			return 100;
+		}
 		int[] currentWorkTotals = new int[solution.get(0).length];
 		for (int i = 0; i < solution.get(0).length; ++i) {
 			int totalValue = 0;
@@ -257,6 +297,9 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	}
 	
 	public boolean fulfillsDemand(ArrayList<int[]> solution) {
+		if(solution.size() == 0) {
+			return false;
+		}
 		int[] currentWorkTotals = new int[solution.get(0).length];
 		for (int i = 0; i < solution.get(0).length; ++i) {
 			int totalValue = 0;

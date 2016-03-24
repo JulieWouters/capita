@@ -17,6 +17,7 @@ public abstract class VariableNeighborhoodSearch {
 			int l = 1;
 			while(l <= kmax){
 				ArrayList<int[]> x3 = exploreNeighborhood(x2,l);
+				printSolution(x3);
 				if(getCost(x3) < getCost(x2)){
 					x2 = x3;
 					l = 1;
@@ -46,6 +47,7 @@ public abstract class VariableNeighborhoodSearch {
 		for(int i = 0; i < solution.size(); i++){
 			System.out.println(Arrays.toString(solution.get(i)));
 		}
+		System.out.println("\n");
 	}
 
 	public abstract void parseFile(File file);
