@@ -128,8 +128,30 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	}
 
 	public ArrayList<int[]> createInitialSolution() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<int[]> initialSolution = new ArrayList<int[]>();
+		while(!fulfillsDemand(initialSolution)) {
+			int[] newWorkerSchedule = getRandomValidWorkerSchedule(demand.length);
+			initialSolution.add(newWorkerSchedule);
+		}
+		
+		return initialSolution;
+	}
+	
+	public boolean fulfillsDemand(ArrayList<int[]> solution) {
+		int[] currentWorkTotals = new int[solution.get(0).length];
+		for (int i = 0; i < solution.get(0).length; ++i) {
+			int totalValue = 0;
+			for(int j = 0; j < solution.size(); j++) {
+				totalValue = totalValue + solution.get(j)[i];
+			}
+		    currentWorkTotals[i] = totalValue;
+		}
+		for(int k = 0; k < currentWorkTotals.length; k++) {
+			if(currentWorkTotals[k] < demand[k]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void parseFile(File file) {
