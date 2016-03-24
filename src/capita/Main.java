@@ -8,7 +8,7 @@ public class Main {
 	public static void main(String[] args) {
 		String type = args[0];
 		VariableNeighborhoodSearch vns;
-		if(type == "g"){
+		if(type.equals("g")){
 			vns = new VNSGeneral();
 		}
 		else {
