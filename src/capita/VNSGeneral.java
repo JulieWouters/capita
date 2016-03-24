@@ -17,13 +17,84 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	public int[] demand;
 
 	public int getCost(ArrayList<int[]> x) {
-		// TODO Auto-generated method stub
-		return 0;
+		int demandShortage = getDemandShortage(x);
+		int demandSurplus = getDemandSurplus(x);
+		int numberOfEmployees = x.size();
+		
+		return demandShortage * 9999999 + demandSurplus * 10 + numberOfEmployees * 100;
 	}
 
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<ArrayList<int[]>> allNeighbours;
+		if (l < 3) {
+			allNeighbours = getAllKSwapNeighbours(x, l);
+		} else if (l == 3) {
+			allNeighbours = getAllAddDropNeighbours(x);
+		} else {
+			allNeighbours = getAllKSwapNeighbours(x, l);
+		}
+		
+		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
+		int cost = Integer.MAX_VALUE;
+		for(ArrayList<int[]> neighbour : allNeighbours) {
+			int newCost = getCost(neighbour);
+			if(newCost < cost) {
+				cost = newCost;
+				bestNeighbour = neighbour;
+			}
+		}
+		
+		return bestNeighbour;
+	}
+
+	private ArrayList<ArrayList<int[]>> getAllAddDropNeighbours(ArrayList<int[]> x) {
+		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
+		for(int i = 0; i < x.size() + 1; i++) {
+			if(i < x.size()) {
+				x.remove(i);
+				allNeighbours.add(x);
+			} else {
+				int[] newWorkerSchedule = getRandomValidWorkerSchedule(x.get(0).length);
+				x.add(newWorkerSchedule);
+				allNeighbours.add(x);
+			}
+		}
+		
+		return allNeighbours;
+	}
+
+	private ArrayList<ArrayList<int[]>> getAllKSwapNeighbours(ArrayList<int[]> x, int l) {
+		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
+		
+		for(int rowIndex1 = 0; rowIndex1 < x.size(); rowIndex1++) {
+			for(int rowIndex2 = 0; rowIndex2 < x.size(); rowIndex2++) {
+				for(int columnIndex1 = 0; columnIndex1 < x.get(0).length + 1 - l; columnIndex1++) {
+					for(int columnIndex2 = 0; columnIndex2 < x.get(0).length + 1 - l; columnIndex2++) {
+						int workerScheduleSize = x.get(0).length;
+						ArrayList<int[]> nextNeighbour = new ArrayList<int[]>();
+						for (int i = 0; i < x.size(); i++) {
+							int[] newWorkerSchedule = new int[workerScheduleSize];
+							for (int j = 0; j < workerScheduleSize; j++) {
+								if(i == rowIndex1 && j >= columnIndex1 && j < columnIndex1 + l) {
+									int offset = j - columnIndex1;
+									newWorkerSchedule[j] = x.get(rowIndex2)[columnIndex2 + offset];
+								} else if(i == rowIndex2 && j >= columnIndex2 && j < columnIndex2 + l) {
+									int offset = j - columnIndex2;
+									newWorkerSchedule[j] = x.get(rowIndex1)[columnIndex1 + offset];
+								} else {
+									newWorkerSchedule[j] = x.get(i)[j];
+								}
+							}
+							nextNeighbour.add(newWorkerSchedule);
+						}
+						
+						allNeighbours.add(nextNeighbour);
+					}
+				}
+			}
+		}
+		
+		return allNeighbours;
 	}
 
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
@@ -135,6 +206,42 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 		}
 		
 		return initialSolution;
+	}
+	
+	public int getDemandSurplus(ArrayList<int[]> solution) {
+		int[] currentWorkTotals = new int[solution.get(0).length];
+		for (int i = 0; i < solution.get(0).length; ++i) {
+			int totalValue = 0;
+			for(int j = 0; j < solution.size(); j++) {
+				totalValue = totalValue + solution.get(j)[i];
+			}
+		    currentWorkTotals[i] = totalValue;
+		}
+		int surplus = 0;
+		for(int k = 0; k < currentWorkTotals.length; k++) {
+			if(currentWorkTotals[k] > demand[k]) {
+				surplus = surplus + currentWorkTotals[k] - demand[k];
+			}
+		}
+		return surplus;
+	}
+	
+	public int getDemandShortage(ArrayList<int[]> solution) {
+		int[] currentWorkTotals = new int[solution.get(0).length];
+		for (int i = 0; i < solution.get(0).length; ++i) {
+			int totalValue = 0;
+			for(int j = 0; j < solution.size(); j++) {
+				totalValue = totalValue + solution.get(j)[i];
+			}
+		    currentWorkTotals[i] = totalValue;
+		}
+		int shortage = 0;
+		for(int k = 0; k < currentWorkTotals.length; k++) {
+			if(currentWorkTotals[k] < demand[k]) {
+				shortage = shortage + demand[k] - currentWorkTotals[k];
+			}
+		}
+		return shortage;
 	}
 	
 	public boolean fulfillsDemand(ArrayList<int[]> solution) {
