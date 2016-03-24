@@ -162,15 +162,15 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 			String line = null;
 			while( (line = reader.readLine()) != null) {
 				String[] split = line.split("-");
-				timespan = Integer.parseInt(split[0]);
-				workDayMin = Integer.parseInt(split[1]);
-				workDayMax = Integer.parseInt(split[2]);
-				offDayMin = Integer.parseInt(split[3]);
-				offDayMax = Integer.parseInt(split[4]);
+				timespan = trimAndParse(split[0]);
+				workDayMin = trimAndParse(split[1]);
+				workDayMax = trimAndParse(split[2]);
+				offDayMin = trimAndParse(split[3]);
+				offDayMax = trimAndParse(split[4]);
 				demand = new int[timespan];
-				String[] array = split[5].substring(1).split(",");
+				String[] array = split[5].substring(1,split[5].length()-1).split(",");
 				for(int i = 0; i < timespan; i++){
-					demand[i] = Integer.parseInt(array[i]);
+					demand[i] = trimAndParse(array[i]);
 				}
 			}
 			reader.close();
