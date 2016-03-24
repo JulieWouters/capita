@@ -8,25 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class VariableNeighborhoodSearch {
-	public static int timespan;
-	public static int workDayMin;
-	public static int workDayMax;
-	public static int offDayMin;
-	public static int offDayMax;
-	public static int[] demand;
-	public static int kmax;
-
-	public static void main(String[] args) {
-		File file = new File(args[0]);
-		parseFile(file);
-		kmax = Integer.parseInt(args[1]);
-
-		ArrayList<int[]> solution = runVNSAlgorithm();
-		printSolution(solution);
-	}
-
-	private static ArrayList<int[]> runVNSAlgorithm() {
+public abstract class VariableNeighborhoodSearch {
+	public int kmax;
+	
+	public ArrayList<int[]> runVNSAlgorithm() {
 		int k = 1;
 		ArrayList<int[]> x;
 		x = createInitialSolution();
@@ -52,55 +37,20 @@ public class VariableNeighborhoodSearch {
 		}
 		return x;
 	}
-
-	private static int getCost(ArrayList<int[]> x2) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private static ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x2, int l) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static ArrayList<int[]> createInitialSolution() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static void parseFile(File file) {
-		FileReader in;
-		try {
-			in = new FileReader(file);
-			BufferedReader reader = new BufferedReader(in);
-			String line = null;
-			while( (line = reader.readLine()) != null) {
-				String[] split = line.split("-");
-				timespan = Integer.parseInt(split[0]);
-				workDayMin = Integer.parseInt(split[1]);
-				workDayMax = Integer.parseInt(split[2]);
-				offDayMin = Integer.parseInt(split[3]);
-				offDayMax = Integer.parseInt(split[4]);
-				demand = new int[timespan];
-				String[] array = split[5].substring(1).split(",");
-				for(int i = 0; i < timespan; i++){
-					demand[i] = Integer.parseInt(array[i]);
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	private static void printSolution(ArrayList<int[]> solution) {
+	public abstract int getCost(ArrayList<int[]> x);
+	
+	public abstract ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l);
+	
+	public abstract ArrayList<int[]> shake(ArrayList<int[]> x, int k);
+
+	public abstract ArrayList<int[]> createInitialSolution();
+
+	public void printSolution(ArrayList<int[]> solution) {
 		for(int i = 0; i < solution.size(); i++){
 			System.out.println(Arrays.toString(solution.get(i)));
 		}
 	}
+
+	public abstract void parseFile(File file);
 }
