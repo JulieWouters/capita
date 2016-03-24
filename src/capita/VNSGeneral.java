@@ -20,8 +20,20 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 		int demandShortage = getDemandShortage(x);
 		int demandSurplus = getDemandSurplus(x);
 		int numberOfEmployees = x.size();
+		boolean satisfiesConstraints = checkConstraints(x);
 		
 		return demandShortage * 9999999 + demandSurplus * 10 + numberOfEmployees * 100;
+	}
+
+	private boolean checkConstraints(ArrayList<int[]> x) {
+		
+		
+		for(int i = 0; i < x.size(); i++) {
+			ArrayList<Integer> currentSequence = new ArrayList<Integer>();
+			for(int j = 0; j < x.get(i).length; j++) {
+				
+			}
+		}
 	}
 
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
