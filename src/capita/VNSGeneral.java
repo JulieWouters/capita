@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class VNSGeneral extends VariableNeighborhoodSearch {
 	public int timespan;
@@ -54,6 +53,7 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 					demand[i] = Integer.parseInt(array[i]);
 				}
 			}
+			reader.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

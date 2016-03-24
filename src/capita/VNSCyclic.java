@@ -56,6 +56,7 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 					demand[i] = Integer.parseInt(demandString[i]);
 				}
 			}
+			reader.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
