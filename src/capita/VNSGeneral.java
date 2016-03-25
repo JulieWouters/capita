@@ -191,13 +191,14 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	private ArrayList<int[]> getRandomAddDropNeighbour(ArrayList<int[]> x) {
 		Random generator = new Random(); 
 		int index = generator.nextInt(x.size() + 1);
+		ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
 		if(index < x.size()) {
-			x.remove(index);
-			return x;
+			newNeighbour.remove(index);
+			return newNeighbour;
 		} else {
 			int[] newWorkerSchedule = getRandomValidWorkerSchedule(x.get(0).length);
-			x.add(newWorkerSchedule);
-			return x;
+			newNeighbour.add(newWorkerSchedule);
+			return newNeighbour;
 		}
 	}
 	
