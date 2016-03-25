@@ -60,48 +60,46 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	}
 
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
-		ArrayList<ArrayList<int[]>> allNeighbours;
-		if (l < 3) {
-			allNeighbours = getAllKSwapNeighbours(x, l);
-		} else if (l == 3) {
-			allNeighbours = getAllAddDropNeighbours(x);
+		if (l < 1) {
+			return getBestKSwapNeighbour(x, 2+l);
+		} else if (l == 1) {
+			return getBestAddDropNeighbour(x);
 		} else {
-			allNeighbours = getAllKSwapNeighbours(x, l);
+			return getBestKSwapNeighbour(x, kmax+1-l);
 		}
-				
+	}
+
+	private ArrayList<int[]> getBestAddDropNeighbour(ArrayList<int[]> x) {
 		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
-		int cost = Integer.MAX_VALUE;
-		for(ArrayList<int[]> neighbour : allNeighbours) {
-			int newCost = getCost(neighbour);
-			if(newCost < cost) {
-				cost = newCost;
-				bestNeighbour = neighbour;
+		int currentCost = Integer.MAX_VALUE;
+		
+		int initialSize = x.size();
+		for(int i = 0; i < initialSize + 1; i++) {
+			ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+			if(i < initialSize) {
+				newNeighbour.remove(i);
+				int newCost = getCost(newNeighbour);
+				if(newCost < currentCost) {
+					bestNeighbour = newNeighbour;
+					currentCost = newCost;
+				}
+			} else {
+				int[] newWorkerSchedule = getRandomValidWorkerSchedule(x.get(0).length);
+				newNeighbour.add(newWorkerSchedule);
+				int newCost = getCost(newNeighbour);
+				if(newCost < currentCost) {
+					bestNeighbour = newNeighbour;
+					currentCost = newCost;
+				}
 			}
 		}
 		
 		return bestNeighbour;
 	}
 
-	private ArrayList<ArrayList<int[]>> getAllAddDropNeighbours(ArrayList<int[]> x) {
-		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
-		int initialSize = x.size();
-		for(int i = 0; i < initialSize + 1; i++) {
-			ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
-			if(i < initialSize) {
-				newNeighbour.remove(i);
-				allNeighbours.add(newNeighbour);
-			} else {
-				int[] newWorkerSchedule = getRandomValidWorkerSchedule(x.get(0).length);
-				newNeighbour.add(newWorkerSchedule);
-				allNeighbours.add(newNeighbour);
-			}
-		}
-		
-		return allNeighbours;
-	}
-
-	private ArrayList<ArrayList<int[]>> getAllKSwapNeighbours(ArrayList<int[]> x, int l) {
-		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
+	private ArrayList<int[]> getBestKSwapNeighbour(ArrayList<int[]> x, int l) {
+		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
+		int currentCost = Integer.MAX_VALUE;
 
 		for(int rowIndex1 = 0; rowIndex1 < x.size(); rowIndex1++) {
 			for(int rowIndex2 = 0; rowIndex2 < x.size(); rowIndex2++) {
@@ -124,33 +122,36 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 							}
 							nextNeighbour.add(newWorkerSchedule);
 						}
-						
-						allNeighbours.add(nextNeighbour);
+						int newCost = getCost(nextNeighbour);
+						if(newCost < currentCost) {
+							bestNeighbour = nextNeighbour;
+							currentCost = newCost;
+						}
 					}
 				}
 			}
 		}
 		
-		return allNeighbours;
+		return bestNeighbour;
 	}
 
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
 		ArrayList<int[]> newSolution;
-		if (k < 3) {
-			newSolution = getRandomKSwapNeighbour(x, k);
-		} else if (k == 3) {
+		if (k < 1) {
+			newSolution = getRandomKSwapNeighbour(x, 2+k);
+		} else if (k == 1) {
 			newSolution = getRandomAddDropNeighbour(x);
 		} else {
-			newSolution = getRandomKSwapNeighbour(x, k-1);
+			newSolution = getRandomKSwapNeighbour(x, kmax+1-k);
 		}
 		
 		while(!checkConstraints(newSolution)) {
-			if (k < 3) {
-				newSolution = getRandomKSwapNeighbour(x, k);
-			} else if (k == 3) {
+			if (k < 1) {
+				newSolution = getRandomKSwapNeighbour(x, 2+k);
+			} else if (k == 1) {
 				newSolution = getRandomAddDropNeighbour(x);
 			} else {
-				newSolution = getRandomKSwapNeighbour(x, k-1);
+				newSolution = getRandomKSwapNeighbour(x, kmax+1-k);
 			}
 		}
 		
