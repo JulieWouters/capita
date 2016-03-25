@@ -11,13 +11,16 @@ public abstract class VariableNeighborhoodSearch {
 		int k = 1;
 		ArrayList<int[]> x;
 		x = createInitialSolution();
+		System.out.println("INITIAL SOLUTION");
+		printSolution(x);
+		System.out.println("WITH COST:");
+		System.out.println(getCost(x));
 		// nog stopconditie
 		while(k <= kmax){
 			ArrayList<int[]> x2 = shake(x,k);
 			int l = 1;
 			while(l <= kmax){
 				ArrayList<int[]> x3 = exploreNeighborhood(x2,l);
-				printSolution(x3);
 				if(getCost(x3) < getCost(x2)){
 					x2 = x3;
 					l = 1;
