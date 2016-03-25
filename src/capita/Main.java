@@ -20,7 +20,10 @@ public class Main {
 
 		//ArrayList<int[]> solution = vns.createInitialSolution();//vns.runVNSAlgorithm();
 		ArrayList<int[]> solution = vns.runVNSAlgorithm();
+		System.out.println("FINAL SOLUTION:");
 		vns.printSolution(solution);
+		System.out.println("WITH COST:");
+		System.out.println(vns.getCost(solution));
 	}
 
 }

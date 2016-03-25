@@ -84,14 +84,16 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 
 	private ArrayList<ArrayList<int[]>> getAllAddDropNeighbours(ArrayList<int[]> x) {
 		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
-		for(int i = 0; i < x.size() + 1; i++) {
-			if(i < x.size()) {
-				x.remove(i);
-				allNeighbours.add(x);
+		int initialSize = x.size();
+		for(int i = 0; i < initialSize + 1; i++) {
+			ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+			if(i < initialSize) {
+				newNeighbour.remove(i);
+				allNeighbours.add(newNeighbour);
 			} else {
 				int[] newWorkerSchedule = getRandomValidWorkerSchedule(x.get(0).length);
-				x.add(newWorkerSchedule);
-				allNeighbours.add(x);
+				newNeighbour.add(newWorkerSchedule);
+				allNeighbours.add(newNeighbour);
 			}
 		}
 		
@@ -252,8 +254,6 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 			int[] newWorkerSchedule = getRandomValidWorkerSchedule(demand.length);
 			initialSolution.add(newWorkerSchedule);
 		}
-		printSolution(initialSolution);
-		System.out.println(checkConstraints(initialSolution));
 		return initialSolution;
 	}
 	
