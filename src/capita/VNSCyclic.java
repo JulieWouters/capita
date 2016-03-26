@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class VNSCyclic extends VariableNeighborhoodSearch {
 	public int timespan;
@@ -20,59 +21,157 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 
 	@Override
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
-		ArrayList<ArrayList<int[]>> allNeighbours;
-		if (l < 3) {
-			allNeighbours = getAllKSwapNeighbours(x, l);
-		} else if (l == 3) {
-			allNeighbours = getAllAddDropNeighbours(x);
+		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
+		
+		if (l < 1) {
+			bestNeighbour = getBestKSwapNeighbour(x, l);
+		} else if (l == 1) {
+			bestNeighbour = getBestAddDropNeighbour(x);
 		} else {
-			allNeighbours = getAllKSwapNeighbours(x, l);
+			bestNeighbour = getBestKSwapNeighbour(x, kmax+1-l);
 		}
 		
+		return bestNeighbour;
+	}
+
+	private ArrayList<int[]> getBestAddDropNeighbour(ArrayList<int[]> x) {
 		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
-		int cost = Integer.MAX_VALUE;
-		for(ArrayList<int[]> neighbour : allNeighbours) {
-			int newCost = getCost(neighbour);
-			if(newCost < cost) {
-				cost = newCost;
-				bestNeighbour = neighbour;
+		int currentCost = Integer.MAX_VALUE;
+		
+		for(int i = 0; i < x.size() + 1; i++) {
+			if(i < x.size()) {
+				ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+				newNeighbour.remove(i);
+				int newCost = getCost(newNeighbour);
+				if(newCost < currentCost) {
+					currentCost = newCost;
+					bestNeighbour = newNeighbour;
+				}
+			} else {
+				for(int j = 0; j < cycle.length; j++) {
+					int[] permutation = cycle.clone();
+					permutate(permutation, j);
+					ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+					newNeighbour.add(permutation.clone());
+					int newCost = getCost(newNeighbour);
+					if(newCost < currentCost) {
+						currentCost = newCost;
+						bestNeighbour = newNeighbour;
+					}
+				}
 			}
 		}
 		
 		return bestNeighbour;
 	}
 
-	private ArrayList<ArrayList<int[]>> getAllAddDropNeighbours(ArrayList<int[]> x) {
-		ArrayList<ArrayList<int[]>> allNeighbours = new ArrayList<ArrayList<int[]>>();
-		Random generator = new Random();
-		for(int i = 0; i < x.size() + 1; i++) {
-			if(i < x.size()) {
-				x.remove(i);
-				allNeighbours.add(x);
-			} else {
-				int[] permutation = cycle.clone();
-				permutate(permutation, generator.nextInt(timespan-1)+1);
-				x.add(permutation.clone());
-				allNeighbours.add(x);
+	private ArrayList<int[]> getBestKSwapNeighbour(ArrayList<int[]> x, int l) {
+		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
+		int currentCost = Integer.MAX_VALUE;
+		
+		int n = x.size();
+		int[] possibleIndices = new int[n];
+		IntStream.range(0,n).forEach(val -> possibleIndices[val-1] = val);
+		ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
+		
+		int[][] possiblePermutations = new int[cycle.length][cycle.length];
+		int [] initialPermutation = cycle.clone();
+		for(int i = 0; i < cycle.length; i++) {
+			permutate(initialPermutation, 1);
+			possiblePermutations[i] = initialPermutation;
+		}
+		ArrayList<int[]>[] allCombinationsOfPermutations = getAllCombinationsOfPermutations(possiblePermutations, l);
+		
+		for(ArrayList<Integer> indicesToChange : allCombinationsOfIndices) {
+			for(ArrayList<int[]> newPermutationsToAdd : allCombinationsOfPermutations) {
+				ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+				for(int j = newNeighbour.size() - 1; j >= 0; j--) {
+					if(indicesToChange.contains(j)) {
+						newNeighbour.remove(j);
+					}
+				}
+				int indexOfPermutationToAdd = 0;
+				while(newNeighbour.size() < x.size()) {
+					newNeighbour.add(newPermutationsToAdd.get(indexOfPermutationToAdd));
+					indexOfPermutationToAdd++;
+				}
+				
+				int newCost = getCost(newNeighbour);
+				if(newCost < currentCost) {
+					bestNeighbour = newNeighbour;
+					currentCost = newCost;
+				}
 			}
 		}
-		
-		return allNeighbours;
+		return bestNeighbour;
 	}
-
-	private ArrayList<ArrayList<int[]>> getAllKSwapNeighbours(ArrayList<int[]> x, int l) {
-
-		return null;
+	
+	private ArrayList<Integer>[] getAllCombinationsOfIndices(int[] possibleValues, int length) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer> allSolutions[]	 = new ArrayList[(int)Math.pow(possibleValues.length, length)];
+		
+		if(length == 1) {
+			int index = 0;
+			for(int value : possibleValues) {
+				ArrayList<Integer> newList = new ArrayList<Integer>();
+				newList.add(value);
+				allSolutions[index] = newList;
+				index++;
+			}
+			return allSolutions;
+		} else {
+			ArrayList<Integer>[] allSubSolutions = getAllCombinationsOfIndices(possibleValues, length - 1);
+			
+			int solutionArrayIndex = 0;
+			for(int i = 0; i < possibleValues.length; i++) {
+				for(int j = 0; j < allSubSolutions.length; j++) {
+					ArrayList<Integer> newList = allSubSolutions[j];
+					newList.add(possibleValues[i]);
+					allSolutions[solutionArrayIndex] = newList;
+					solutionArrayIndex++;
+				}
+			}
+			return allSolutions;
+		}
+	}
+	
+	private ArrayList<int[]>[] getAllCombinationsOfPermutations(int[][] possibleValues, int length) {
+		@SuppressWarnings("unchecked")
+		ArrayList<int[]> allSolutions[]	 = new ArrayList[(int)Math.pow(possibleValues.length, length)];
+		
+		if(length == 1) {
+			int index = 0;
+			for(int[] value : possibleValues) {
+				ArrayList<int[]> newList = new ArrayList<int[]>();
+				newList.add(value);
+				allSolutions[index] = newList;
+				index++;
+			}
+			return allSolutions;
+		} else {
+			ArrayList<int[]>[] allSubSolutions = getAllCombinationsOfPermutations(possibleValues, length - 1);
+			
+			int solutionArrayIndex = 0;
+			for(int i = 0; i < possibleValues.length; i++) {
+				for(int j = 0; j < allSubSolutions.length; j++) {
+					ArrayList<int[]> newList = allSubSolutions[j];
+					newList.add(possibleValues[i]);
+					allSolutions[solutionArrayIndex] = newList;
+					solutionArrayIndex++;
+				}
+			}
+			return allSolutions;
+		}
 	}
 
 	@Override
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
-		if (k < 3) {
+		if (k < 1) {
 			return getRandomKSwapNeighbour(x, k);
-		} else if (k == 3) {
+		} else if (k == 1) {
 			return getRandomAddDropNeighbour(x);
 		} else {
-			return getRandomKSwapNeighbour(x, k-1);
+			return getRandomKSwapNeighbour(x, kmax+1-k);
 		}
 	}
 
