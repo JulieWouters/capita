@@ -77,9 +77,9 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		int n = x.size();
 		int[] possibleIndices = new int[n];
 		IntStream.range(0,n).forEach(val -> possibleIndices[val] = val);
+		//ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
 		ArrayList<ArrayList<Integer>> allCombinationsOfIndices = new ArrayList<ArrayList<Integer>>();
 		getAllCombinationsOfIndices2(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
-		System.out.println(allCombinationsOfIndices.size());
 		
 		int[][] possiblePermutations = new int[cycle.length][cycle.length];
 		int [] initialPermutation = cycle.clone();
@@ -198,20 +198,22 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		Random generator = new Random(); 
 		int index = generator.nextInt(x.size() + 1);
 		if(index < x.size()) {
-			x.remove(index);
-			return x;
+			ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+			newNeighbour.remove(index);
+			return newNeighbour;
 		} else {
 			int[] permutation = cycle.clone();
 			permutate(permutation, generator.nextInt(timespan-1)+1);
-			x.add(permutation.clone());
-			return x;
+			ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+			newNeighbour.add(permutation.clone());
+			return newNeighbour;
 		}
 	}
 
 	private ArrayList<int[]> getRandomKSwapNeighbour(ArrayList<int[]> x, int k) {
 		Random generator = new Random();
 		int[] permutation = cycle.clone();
-		ArrayList<int[]> randomNeighbour = x;
+		ArrayList<int[]> randomNeighbour = (ArrayList<int[]>) x.clone();
 		int n = k;
 		while(n > 0){
 			int rowIndex = generator.nextInt(x.size()-(k-n));

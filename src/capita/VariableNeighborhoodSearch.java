@@ -25,15 +25,17 @@ public abstract class VariableNeighborhoodSearch {
 					x2 = x3;
 					l = 1;
 				}
-				else
+				else {
 					l++;
+				}
 			}
 			if(getCost(x2) < getCost(x)){
 				x = x2;
 				k = 1;
 			}
-			else
+			else {
 				k++;
+			}
 		}
 		return x;
 	}
