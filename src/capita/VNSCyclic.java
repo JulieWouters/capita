@@ -71,7 +71,7 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		
 		int n = x.size();
 		int[] possibleIndices = new int[n];
-		IntStream.range(0,n).forEach(val -> possibleIndices[val-1] = val);
+		IntStream.range(0,n).forEach(val -> possibleIndices[val] = val);
 		ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
 		
 		int[][] possiblePermutations = new int[cycle.length][cycle.length];
