@@ -77,7 +77,9 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		int n = x.size();
 		int[] possibleIndices = new int[n];
 		IntStream.range(0,n).forEach(val -> possibleIndices[val] = val);
-		ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
+		ArrayList<ArrayList<Integer>> allCombinationsOfIndices = new ArrayList<ArrayList<Integer>>();
+		getAllCombinationsOfIndices2(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
+		System.out.println(allCombinationsOfIndices.size());
 		
 		int[][] possiblePermutations = new int[cycle.length][cycle.length];
 		int [] initialPermutation = cycle.clone();
@@ -109,6 +111,18 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			}
 		}
 		return bestNeighbour;
+	}
+	
+	private void getAllCombinationsOfIndices2(int[] possibleValues, int lengthLeft, int indexToStart, ArrayList<Integer> result, ArrayList<ArrayList<Integer>> listOfResults) {
+		if(lengthLeft == 0) {
+			listOfResults.add(result);
+		} else {
+			for(int i = indexToStart; i <= possibleValues.length-lengthLeft; i++) {
+				ArrayList<Integer> newResult = (ArrayList<Integer>) result.clone();
+				newResult.add(possibleValues[i]);
+				getAllCombinationsOfIndices2(possibleValues, lengthLeft-1, indexToStart+1, newResult, listOfResults);
+			}
+		}
 	}
 	
 	private ArrayList<Integer>[] getAllCombinationsOfIndices(int[] possibleValues, int length) {
