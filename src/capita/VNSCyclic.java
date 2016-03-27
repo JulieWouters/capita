@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -15,8 +16,12 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 	
 	@Override
 	public int getCost(ArrayList<int[]> x) {
-		// TODO Auto-generated method stub
-		return 0;
+		int numberOfEmployees = x.size();
+		if(getDemandShortage(x) > 0) {
+			return 999999;
+		} else {
+			return numberOfEmployees * 10;
+		}
 	}
 
 	@Override
@@ -125,7 +130,7 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			int solutionArrayIndex = 0;
 			for(int i = 0; i < possibleValues.length; i++) {
 				for(int j = 0; j < allSubSolutions.length; j++) {
-					ArrayList<Integer> newList = allSubSolutions[j];
+					ArrayList<Integer> newList = (ArrayList<Integer>) allSubSolutions[j].clone();
 					newList.add(possibleValues[i]);
 					allSolutions[solutionArrayIndex] = newList;
 					solutionArrayIndex++;
@@ -243,6 +248,27 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			perm[1]=temp;
 			j--;
 		}
+	}
+	
+	public int getDemandShortage(ArrayList<int[]> solution) {
+		if(solution.size() == 0) {
+			return 100;
+		}
+		int[] currentWorkTotals = new int[solution.get(0).length];
+		for (int i = 0; i < solution.get(0).length; ++i) {
+			int totalValue = 0;
+			for(int j = 0; j < solution.size(); j++) {
+				totalValue = totalValue + solution.get(j)[i];
+			}
+		    currentWorkTotals[i] = totalValue;
+		}
+		int shortage = 0;
+		for(int k = 0; k < currentWorkTotals.length; k++) {
+			if(currentWorkTotals[k] < demand[k]) {
+				shortage = shortage + demand[k] - currentWorkTotals[k];
+			}
+		}
+		return shortage;
 	}
 
 	@Override
