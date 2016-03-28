@@ -44,13 +44,10 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 	@Override
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
 		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
-		
-		if (l < 1) {
-			bestNeighbour = getBestKSwapNeighbour(x, l);
-		} else if (l == 1) {
+		if (l == 1) {
 			bestNeighbour = getBestAddDropNeighbour(x);
 		} else if (l < 5){
-			bestNeighbour = getBestKSwapNeighbour(x, kmax+1-l);
+			bestNeighbour = getBestKSwapNeighbour(x, l-1);
 		} else {
 			bestNeighbour = getBestKSwapAndDropNeighbour(x, l - 4);
 		}
@@ -252,12 +249,10 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 
 	@Override
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
-		if (k < 1) {
-			return getRandomKSwapNeighbour(x, k);
-		} else if (k == 1) {
+		if (k == 1) {
 			return getRandomAddDropNeighbour(x);
 		} else {
-			return getRandomKSwapNeighbour(x, kmax+1-k);
+			 return getRandomKSwapNeighbour(x, k-1);
 		}
 	}
 

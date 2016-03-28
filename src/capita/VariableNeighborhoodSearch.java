@@ -18,8 +18,15 @@ public abstract class VariableNeighborhoodSearch {
 		System.out.println(getCost(x));
 		// nog stopconditie
 		int iter = 3;
+		int cost = getCost(x);
 		while(iter > 0){
-			iter--;
+			if(cost == getCost(x)){
+				iter--;
+			}
+			else{
+				cost = getCost(x);
+				iter = 3;
+			}
 			k = 1;
 			while(k <= kmax){
 				ArrayList<int[]> x2 = shake(x,k);
