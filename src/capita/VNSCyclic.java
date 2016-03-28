@@ -49,6 +49,7 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		} else if (l < 5){
 			bestNeighbour = getBestKSwapNeighbour(x, l-1);
 		} else {
+			System.out.println("actually getting here");
 			bestNeighbour = getBestKSwapAndDropNeighbour(x, l - 4);
 		}
 		
@@ -251,8 +252,10 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
 		if (k == 1) {
 			return getRandomAddDropNeighbour(x);
+		} else if (k < 5) {
+			return getRandomKSwapNeighbour(x, k-1);
 		} else {
-			 return getRandomKSwapNeighbour(x, k-1);
+			return getRandomKSwapAndDropNeighbour(x, k - 4);
 		}
 	}
 
@@ -288,6 +291,26 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			randomNeighbour.add(permutation.clone());
 			n--;
 		}
+		return randomNeighbour;
+	}
+	
+	private ArrayList<int[]> getRandomKSwapAndDropNeighbour(ArrayList<int[]> x, int k) {
+		Random generator = new Random();
+		int[] permutation = cycle.clone();
+		ArrayList<int[]> randomNeighbour = (ArrayList<int[]>) x.clone();
+		int n = k;
+		while(n > 0){
+			int rowIndex = generator.nextInt(x.size()-(k-n));
+			randomNeighbour.remove(rowIndex);
+			n--;
+		}
+		n = k;
+		while(n > 0){
+			permutate(permutation, generator.nextInt(timespan-1)+1);
+			randomNeighbour.add(permutation.clone());
+			n--;
+		}
+		randomNeighbour.remove(generator.nextInt(randomNeighbour.size()));
 		return randomNeighbour;
 	}
 
