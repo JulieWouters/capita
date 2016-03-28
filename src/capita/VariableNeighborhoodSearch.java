@@ -6,9 +6,10 @@ import java.util.Arrays;
 
 public abstract class VariableNeighborhoodSearch {
 	public int kmax;
+	public int[] demand;
 	
 	public ArrayList<int[]> runVNSAlgorithm() {
-		int k = 1;
+		int k;
 		ArrayList<int[]> x;
 		x = createInitialSolution();
 		System.out.println("INITIAL SOLUTION");
@@ -16,26 +17,32 @@ public abstract class VariableNeighborhoodSearch {
 		System.out.println("WITH COST:");
 		System.out.println(getCost(x));
 		// nog stopconditie
-		while(k <= kmax){
-			ArrayList<int[]> x2 = shake(x,k);
-			int l = 1;
-			while(l <= kmax){
-				ArrayList<int[]> x3 = exploreNeighborhood(x2,l);
-				if(getCost(x3) < getCost(x2)){
-					x2 = x3;
-					l = 1;
+		int iter = 3;
+		while(iter > 0){
+			iter--;
+			k = 1;
+			while(k <= kmax){
+				ArrayList<int[]> x2 = shake(x,k);
+				int l = 1;
+				while(l <= kmax){
+					ArrayList<int[]> x3 = exploreNeighborhood(x2,l);
+					if(getCost(x3) < getCost(x2)){
+						x2 = x3;
+						l = 1;
+					}
+					else {
+						l++;
+					}
+				}
+				if(getCost(x2) < getCost(x)){
+					x = x2;
+					k = 1;
 				}
 				else {
-					l++;
+					k++;
 				}
 			}
-			if(getCost(x2) < getCost(x)){
-				x = x2;
-				k = 1;
-			}
-			else {
-				k++;
-			}
+			System.out.println(getCost(x));
 		}
 		return x;
 	}
@@ -59,5 +66,26 @@ public abstract class VariableNeighborhoodSearch {
 	
 	public int trimAndParse(String str){
 		return Integer.parseInt(str.trim());
+	}
+	
+	public int getDemandShortage(ArrayList<int[]> solution) {
+		if(solution.size() == 0) {
+			return 100;
+		}
+		int[] currentWorkTotals = new int[solution.get(0).length];
+		for (int i = 0; i < solution.get(0).length; ++i) {
+			int totalValue = 0;
+			for(int j = 0; j < solution.size(); j++) {
+				totalValue = totalValue + solution.get(j)[i];
+			}
+		    currentWorkTotals[i] = totalValue;
+		}
+		int shortage = 0;
+		for(int k = 0; k < currentWorkTotals.length; k++) {
+			if(currentWorkTotals[k] < demand[k]) {
+				shortage = shortage + demand[k] - currentWorkTotals[k];
+			}
+		}
+		return shortage;
 	}
 }

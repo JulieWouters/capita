@@ -14,7 +14,6 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	public int workDayMax;
 	public int offDayMin;
 	public int offDayMax;
-	public int[] demand;
 
 	public int getCost(ArrayList<int[]> x) {
 		int demandShortage = getDemandShortage(x);
@@ -275,27 +274,6 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 			}
 		}
 		return surplus;
-	}
-	
-	public int getDemandShortage(ArrayList<int[]> solution) {
-		if(solution.size() == 0) {
-			return 100;
-		}
-		int[] currentWorkTotals = new int[solution.get(0).length];
-		for (int i = 0; i < solution.get(0).length; ++i) {
-			int totalValue = 0;
-			for(int j = 0; j < solution.size(); j++) {
-				totalValue = totalValue + solution.get(j)[i];
-			}
-		    currentWorkTotals[i] = totalValue;
-		}
-		int shortage = 0;
-		for(int k = 0; k < currentWorkTotals.length; k++) {
-			if(currentWorkTotals[k] < demand[k]) {
-				shortage = shortage + demand[k] - currentWorkTotals[k];
-			}
-		}
-		return shortage;
 	}
 	
 	public boolean fulfillsDemand(ArrayList<int[]> solution) {

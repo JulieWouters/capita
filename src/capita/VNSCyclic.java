@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 public class VNSCyclic extends VariableNeighborhoodSearch {
 	public int timespan;
 	public int[] cycle;
-	public int[] demand;
 	
 	@Override
 	public int getCost(ArrayList<int[]> x) {
