@@ -19,8 +19,26 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		if(getDemandShortage(x) > 0) {
 			return 999999;
 		} else {
-			return numberOfEmployees * 10;
+			return numberOfEmployees * 100 + getCostOfDemandSurplus(x);
 		}
+	}
+	
+	private int getCostOfDemandSurplus(ArrayList<int[]> solution) {
+		int[] currentWorkTotals = new int[solution.get(0).length];
+		for (int i = 0; i < solution.get(0).length; ++i) {
+			int totalValue = 0;
+			for(int j = 0; j < solution.size(); j++) {
+				totalValue = totalValue + solution.get(j)[i];
+			}
+		    currentWorkTotals[i] = totalValue;
+		}
+		int surplusCost = 0;
+		for(int k = 0; k < currentWorkTotals.length; k++) {
+			if(currentWorkTotals[k] > demand[k]) {
+				surplusCost = surplusCost + (currentWorkTotals[k] - demand[k]) * (currentWorkTotals[k] - demand[k]);
+			}
+		}
+		return surplusCost;
 	}
 
 	@Override
@@ -31,8 +49,10 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			bestNeighbour = getBestKSwapNeighbour(x, l);
 		} else if (l == 1) {
 			bestNeighbour = getBestAddDropNeighbour(x);
-		} else {
+		} else if (l < 5){
 			bestNeighbour = getBestKSwapNeighbour(x, kmax+1-l);
+		} else {
+			bestNeighbour = getBestKSwapAndDropNeighbour(x, l - 4);
 		}
 		
 		return bestNeighbour;
@@ -66,6 +86,54 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 			}
 		}
 		
+		return bestNeighbour;
+	}
+	
+	private ArrayList<int[]> getBestKSwapAndDropNeighbour(ArrayList<int[]> x, int l) {
+		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
+		int currentCost = Integer.MAX_VALUE;
+		
+		int n = x.size();
+		int[] possibleIndices = new int[n];
+		IntStream.range(0,n).forEach(val -> possibleIndices[val] = val);
+		//ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
+		ArrayList<ArrayList<Integer>> allCombinationsOfIndices = new ArrayList<ArrayList<Integer>>();
+		getAllCombinationsOfIndices2(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
+		
+		int[][] possiblePermutations = new int[cycle.length][cycle.length];
+		int [] initialPermutation = cycle.clone();
+		for(int i = 0; i < cycle.length; i++) {
+			permutate(initialPermutation, 1);
+			possiblePermutations[i] = initialPermutation;
+		}
+		ArrayList<int[]>[] allCombinationsOfPermutations = getAllCombinationsOfPermutations(possiblePermutations, l);
+		
+		for(ArrayList<Integer> indicesToChange : allCombinationsOfIndices) {
+			for(ArrayList<int[]> newPermutationsToAdd : allCombinationsOfPermutations) {
+				ArrayList<int[]> newNeighbour = (ArrayList<int[]>) x.clone();
+				for(int j = newNeighbour.size() - 1; j >= 0; j--) {
+					if(indicesToChange.contains(j)) {
+						newNeighbour.remove(j);
+					}
+				}
+				int indexOfPermutationToAdd = 0;
+				while(newNeighbour.size() < x.size()) {
+					newNeighbour.add(newPermutationsToAdd.get(indexOfPermutationToAdd));
+					indexOfPermutationToAdd++;
+				}
+				
+				
+				for(int k = 0; k < newNeighbour.size(); k++) {
+					ArrayList<int[]> newNeighbour2 = (ArrayList<int[]>) newNeighbour.clone();
+					newNeighbour2.remove(k);
+					int newCost = getCost(newNeighbour2);
+					if(newCost < currentCost) {
+						bestNeighbour = newNeighbour2;
+						currentCost = newCost;
+					}
+				}
+			}
+		}
 		return bestNeighbour;
 	}
 
