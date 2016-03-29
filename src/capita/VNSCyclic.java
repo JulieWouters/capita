@@ -316,14 +316,11 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 	@Override
 	public ArrayList<int[]> createInitialSolution() {
 		ArrayList<int[]> solution = new ArrayList<int[]>();
+		Random generator = new Random();
 		int[] perm = cycle.clone();
-		for(int i = 0; i < timespan; i++){
-			while(perm[i] == 0){
-				permutate(perm,1);
-			}
-			while(!demandSatisfied(solution,i)){
-				solution.add(perm.clone());
-			}
+		while(getDemandShortage(solution) > 0) {
+			permutate(perm,generator.nextInt(perm.length));
+			solution.add(perm.clone());
 		}
 		return solution;
 	}
