@@ -49,7 +49,6 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		} else if (l < 5){
 			bestNeighbour = getBestKSwapNeighbour(x, l-1);
 		} else {
-			System.out.println("actually getting here");
 			bestNeighbour = getBestKSwapAndDropNeighbour(x, l - 4);
 		}
 		

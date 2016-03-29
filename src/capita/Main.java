@@ -1,6 +1,9 @@
 package capita;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
@@ -20,10 +23,22 @@ public class Main {
 
 		//ArrayList<int[]> solution = vns.createInitialSolution();//vns.runVNSAlgorithm();
 		ArrayList<int[]> solution = vns.runVNSAlgorithm();
-		System.out.println("FINAL SOLUTION:");
+//		System.out.println("FINAL SOLUTION:");
 		vns.printSolution(solution);
-		System.out.println("WITH COST:");
-		System.out.println(vns.getCost(solution));
+//		System.out.println("WITH COST:");
+		int cost = vns.getCost(solution);
+		System.out.println(cost);
+		File output = new File(args[3]);
+		FileWriter out;
+		try {
+			out = new FileWriter(output);
+			BufferedWriter writer = new BufferedWriter(out);
+			writer.write(String.valueOf(cost));
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

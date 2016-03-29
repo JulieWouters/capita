@@ -59,12 +59,10 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 	}
 
 	public ArrayList<int[]> exploreNeighborhood(ArrayList<int[]> x, int l) {
-		if (l < 1) {
-			return getBestKSwapNeighbour(x, 2+l);
-		} else if (l == 1) {
+		if (l == 1) {
 			return getBestAddDropNeighbour(x);
 		} else {
-			return getBestKSwapNeighbour(x, kmax+1-l);
+			return getBestKSwapNeighbour(x, l-1);
 		}
 	}
 
@@ -136,21 +134,17 @@ public class VNSGeneral extends VariableNeighborhoodSearch {
 
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
 		ArrayList<int[]> newSolution;
-		if (k < 1) {
-			newSolution = getRandomKSwapNeighbour(x, 2+k);
-		} else if (k == 1) {
+		if (k == 1) {
 			newSolution = getRandomAddDropNeighbour(x);
 		} else {
-			newSolution = getRandomKSwapNeighbour(x, kmax+1-k);
+			newSolution = getRandomKSwapNeighbour(x, k-1);
 		}
 		
 		while(!checkConstraints(newSolution)) {
-			if (k < 1) {
-				newSolution = getRandomKSwapNeighbour(x, 2+k);
-			} else if (k == 1) {
+			if (k == 1) {
 				newSolution = getRandomAddDropNeighbour(x);
 			} else {
-				newSolution = getRandomKSwapNeighbour(x, kmax+1-k);
+				newSolution = getRandomKSwapNeighbour(x, k-1);
 			}
 		}
 		
