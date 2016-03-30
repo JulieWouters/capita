@@ -1,0 +1,6 @@
+### PARAMETER FILE FOR THE VNS ALGORITHM
+
+# name		switch		     type	values			[conditions (using R syntax)]
+
+kmax           ""                 i		(1,5)
+

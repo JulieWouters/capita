@@ -1,0 +1,23 @@
+############################################################################
+## Configuration for Iterated Race,
+## to tune the VNS algorithm.
+############################################################################
+
+parameterFile <- "./parameters.txt"
+
+execDir <- "./vns-arena"
+
+instanceDir <- "./Instances"
+instanceFile <- "./training_instance_list-01.txt"
+
+parallel <- 1
+
+maxExperiments <- 300
+
+hookRun <- "./hook-run"
+
+digits <- 2
+
+debugLevel <- 2
+
+############################################################################
