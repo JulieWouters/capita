@@ -1,3 +1,45 @@
 How to run the problem generator (gen.jar)
 --------------------------------------------
 
+The generator expects an amount of problems to generate. This can be done
+by giving as parameters "-nb" followed by a space and then the amount.
+It is also possible to give a target value for the daily demand of employees, by
+giving as parameters "-empl" followed by a space and then the target value.
+If a target value is not given, the gerenator will create problems with a random
+amount of employees (as explained in the report).
+
+How to run the vns algorithm (vns.jar)
+--------------------------------------------
+
+The vns algorithm expects following parameters in the given order separated by spaces:
+"g" or "c" for a general or cyclic problem,
+the text-file that contains the problem to be solved (format explained below),
+the value for the parameter kmax,
+an output text-file that will contain the cost of the final solution.
+
+An example of a command line to run vns.jar:
+java -jar vns.jar c CDODOSPproblem1.txt 4 out.txt
+
+The format of a GDODOSP
+--------------------------------------------
+
+A text-file containing a specific problem should contain following parameters,
+separated by "-":
+the timespan,
+d^-,
+d^+,
+o^-,
+o^+,
+the employee demand array.
+An example:
+7-1-2-1-4-[12, 10, 11, 10, 10, 10, 11]
+
+The format of a CDODOSP
+--------------------------------------------
+A text-file containing a specific problem should contain following parameters,
+separated by "-":
+the timespan,
+the basic assignment,
+the employee demand array.
+An example:
+7-[1, 1, 0, 0, 1, 1, 0]-[15, 14, 13, 13, 14, 13, 14]
