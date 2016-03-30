@@ -46,10 +46,10 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		ArrayList<int[]> bestNeighbour = new ArrayList<int[]>();
 		if (l == 1) {
 			bestNeighbour = getBestAddDropNeighbour(x);
-		} else if (l < 5){
+		} else if (l < 4){
 			bestNeighbour = getBestKSwapNeighbour(x, l-1);
 		} else {
-			bestNeighbour = getBestKSwapAndDropNeighbour(x, l - 4);
+			bestNeighbour = getBestKSwapAndDropNeighbour(x, l - 3);
 		}
 		
 		return bestNeighbour;
@@ -93,9 +93,8 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		int n = x.size();
 		int[] possibleIndices = new int[n];
 		IntStream.range(0,n).forEach(val -> possibleIndices[val] = val);
-		//ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
 		ArrayList<ArrayList<Integer>> allCombinationsOfIndices = new ArrayList<ArrayList<Integer>>();
-		getAllCombinationsOfIndices2(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
+		getAllCombinationsOfIndices(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
 		
 		int[][] possiblePermutations = new int[cycle.length][cycle.length];
 		int [] initialPermutation = cycle.clone();
@@ -141,9 +140,8 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		int n = x.size();
 		int[] possibleIndices = new int[n];
 		IntStream.range(0,n).forEach(val -> possibleIndices[val] = val);
-		//ArrayList<Integer>[] allCombinationsOfIndices = getAllCombinationsOfIndices(possibleIndices, l);
 		ArrayList<ArrayList<Integer>> allCombinationsOfIndices = new ArrayList<ArrayList<Integer>>();
-		getAllCombinationsOfIndices2(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
+		getAllCombinationsOfIndices(possibleIndices, l, 0, new ArrayList<Integer>(), allCombinationsOfIndices);
 		
 		int[][] possiblePermutations = new int[cycle.length][cycle.length];
 		int [] initialPermutation = cycle.clone();
@@ -177,44 +175,15 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 		return bestNeighbour;
 	}
 	
-	private void getAllCombinationsOfIndices2(int[] possibleValues, int lengthLeft, int indexToStart, ArrayList<Integer> result, ArrayList<ArrayList<Integer>> listOfResults) {
+	private void getAllCombinationsOfIndices(int[] possibleValues, int lengthLeft, int indexToStart, ArrayList<Integer> result, ArrayList<ArrayList<Integer>> listOfResults) {
 		if(lengthLeft == 0) {
 			listOfResults.add(result);
 		} else {
 			for(int i = indexToStart; i <= possibleValues.length-lengthLeft; i++) {
 				ArrayList<Integer> newResult = (ArrayList<Integer>) result.clone();
 				newResult.add(possibleValues[i]);
-				getAllCombinationsOfIndices2(possibleValues, lengthLeft-1, indexToStart+1, newResult, listOfResults);
+				getAllCombinationsOfIndices(possibleValues, lengthLeft-1, indexToStart+1, newResult, listOfResults);
 			}
-		}
-	}
-	
-	private ArrayList<Integer>[] getAllCombinationsOfIndices(int[] possibleValues, int length) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Integer> allSolutions[]	 = new ArrayList[(int)Math.pow(possibleValues.length, length)];
-		
-		if(length == 1) {
-			int index = 0;
-			for(int value : possibleValues) {
-				ArrayList<Integer> newList = new ArrayList<Integer>();
-				newList.add(value);
-				allSolutions[index] = newList;
-				index++;
-			}
-			return allSolutions;
-		} else {
-			ArrayList<Integer>[] allSubSolutions = getAllCombinationsOfIndices(possibleValues, length - 1);
-			
-			int solutionArrayIndex = 0;
-			for(int i = 0; i < possibleValues.length; i++) {
-				for(int j = 0; j < allSubSolutions.length; j++) {
-					ArrayList<Integer> newList = (ArrayList<Integer>) allSubSolutions[j].clone();
-					newList.add(possibleValues[i]);
-					allSolutions[solutionArrayIndex] = newList;
-					solutionArrayIndex++;
-				}
-			}
-			return allSolutions;
 		}
 	}
 	
@@ -251,10 +220,10 @@ public class VNSCyclic extends VariableNeighborhoodSearch {
 	public ArrayList<int[]> shake(ArrayList<int[]> x, int k) {
 		if (k == 1) {
 			return getRandomAddDropNeighbour(x);
-		} else if (k < 5) {
+		} else if (k < 4) {
 			return getRandomKSwapNeighbour(x, k-1);
 		} else {
-			return getRandomKSwapAndDropNeighbour(x, k - 4);
+			return getRandomKSwapAndDropNeighbour(x, k - 3);
 		}
 	}
 

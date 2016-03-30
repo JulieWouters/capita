@@ -12,10 +12,10 @@ public abstract class VariableNeighborhoodSearch {
 		int k;
 		ArrayList<int[]> x;
 		x = createInitialSolution();
-		System.out.println("INITIAL SOLUTION");
-		printSolution(x);
-		System.out.println("WITH COST:");
-		System.out.println(getCost(x));
+//		System.out.println("INITIAL SOLUTION");
+//		printSolution(x);
+//		System.out.println("WITH COST:");
+//		System.out.println(getCost(x));
 		// nog stopconditie
 		int iter = 3;
 		int cost = getCost(x);
@@ -49,7 +49,7 @@ public abstract class VariableNeighborhoodSearch {
 					k++;
 				}
 			}
-			System.out.println(getCost(x));
+//			System.out.println(getCost(x));
 		}
 		return x;
 	}
